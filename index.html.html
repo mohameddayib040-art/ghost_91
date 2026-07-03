@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GHOST_91 — Cybersecurity & Software</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#0A0A0E;
+  --panel:#100E17;
+  --panel-2:#17141F;
+  --line:#26222F;
+  --bone:#F2EFE6;
+  --bone-dim:#B8B4A8;
+  --grey:#8B8578;
+  --amber:#3E8FFF;
+  --amber-dim:#1F5FCC;
+  --violet:#3A4E7A;
+  --wa:#25D366;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--void);
+  color:var(--bone);
+  font-family:'Inter',sans-serif;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:inherit;text-decoration:none;}
+
+/* subtle grid texture background */
+.grid-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size:64px 64px;
+  opacity:0.15;
+  mask-image:radial-gradient(ellipse 80% 50% at 50% 0%, #000 40%, transparent 100%);
+}
+
+header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 6%;
+  backdrop-filter:blur(10px);
+  background:rgba(10,10,14,0.75);
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px;letter-spacing:1px;transition:opacity .15s ease;}
+.brand:hover{opacity:0.8;}
+.brand-mark{width:34px;height:34px;border-radius:8px;background:var(--panel);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.brand-mark svg{width:20px;height:20px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 12px var(--amber);animation:blink 1.6s steps(1) infinite;}
+
+/* WhatsApp floating button */
+.wa-float{
+  position:fixed;bottom:26px;right:26px;z-index:200;
+  width:58px;height:58px;border-radius:50%;
+  background:var(--wa);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 10px 30px rgba(37,211,102,0.4);
+  transition:transform .15s ease;
+}
+.wa-float:hover{transform:scale(1.08);}
+.wa-float svg{width:28px;height:28px;fill:#fff;}
+.wa-ping{
+  position:absolute;inset:0;border-radius:50%;background:var(--wa);
+  animation:wa-pulse 2.2s ease-out infinite;
+}
+@keyframes wa-pulse{0%{transform:scale(1);opacity:0.5;}100%{transform:scale(1.7);opacity:0;}}
+@media (prefers-reduced-motion: reduce){.wa-ping{animation:none;}}
+@keyframes blink{0%,49%{opacity:1;}50%,100%{opacity:.2;}}
+nav{display:flex;gap:36px;font-size:14px;color:var(--bone-dim);}
+nav a:hover{color:var(--amber);}
+
+/* mobile nav */
+.nav-toggle{
+  display:none;
+  width:38px;height:38px;border-radius:6px;
+  border:1px solid var(--line);background:var(--panel);
+  align-items:center;justify-content:center;
+  cursor:pointer;
+}
+.nav-toggle span{display:block;width:16px;height:2px;background:var(--bone);position:relative;}
+.nav-toggle span::before,.nav-toggle span::after{content:'';position:absolute;left:0;width:16px;height:2px;background:var(--bone);transition:transform .2s ease;}
+.nav-toggle span::before{top:-5px;}
+.nav-toggle span::after{top:5px;}
+.nav-toggle.open span{background:transparent;}
+.nav-toggle.open span::before{transform:rotate(45deg);top:0;}
+.nav-toggle.open span::after{transform:rotate(-45deg);top:0;}
+
+section{position:relative;z-index:1;padding:120px 6% 90px;}
+
+/* HERO */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding-top:140px;
+}
+.hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:60px;align-items:center;}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--amber);
+  letter-spacing:3px;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:'';width:24px;height:1px;background:var(--amber);}
+h1{
+  font-family:'JetBrains Mono',monospace;
+  font-size:clamp(38px,5vw,64px);
+  font-weight:800;line-height:1.08;letter-spacing:-1px;
+  margin-bottom:24px;
+}
+h1 span{color:var(--amber);}
+.hero p.lead{font-size:18px;color:var(--bone-dim);max-width:520px;margin-bottom:36px;}
+.cta-row{display:flex;gap:16px;flex-wrap:wrap;}
+.btn{
+  font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;
+  padding:15px 28px;border-radius:2px;letter-spacing:0.5px;
+  display:inline-flex;align-items:center;gap:10px;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.btn-primary{background:var(--amber);color:var(--void);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(62,143,255,0.3);}
+.btn-ghost{border:1px solid var(--line);color:var(--bone);}
+.btn-ghost:hover{border-color:var(--amber);color:var(--amber);}
+
+/* terminal */
+.terminal{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 30px 80px -20px rgba(0,0,0,0.6);
+}
+.term-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;background:var(--panel-2);border-bottom:1px solid var(--line);
+}
+.term-bar span{width:10px;height:10px;border-radius:50%;}
+.term-bar span:nth-child(1){background:#FF5F57;}
+.term-bar span:nth-child(2){background:#FEBC2E;}
+.term-bar span:nth-child(3){background:#28C840;}
+.term-title{margin-left:10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--grey);}
+.term-body{padding:22px;font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--bone-dim);min-height:260px;}
+.term-body .l{margin-bottom:10px;}
+.term-body .prompt{color:var(--amber);}
+.term-body .ok{color:#7FD98A;}
+.cursor{display:inline-block;width:8px;height:14px;background:var(--amber);animation:blink 1s steps(1) infinite;vertical-align:middle;}
+
+/* SECTION HEAD */
+.section-head{max-width:640px;margin-bottom:56px;}
+.tag{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:13px;letter-spacing:3px;text-transform:uppercase;}
+h2{font-family:'JetBrains Mono',monospace;font-size:clamp(28px,3.5vw,40px);font-weight:800;margin-top:12px;letter-spacing:-0.5px;}
+.section-head p{color:var(--bone-dim);margin-top:16px;font-size:16px;}
+
+/* SERVICES */
+.services-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.service{background:var(--void);padding:36px 28px;transition:background .2s ease;}
+.service:hover{background:var(--panel);}
+.service .num{font-family:'JetBrains Mono',monospace;color:var(--violet);font-size:13px;margin-bottom:24px;}
+.service h3{font-family:'JetBrains Mono',monospace;font-size:18px;margin-bottom:14px;letter-spacing:-0.3px;}
+.service p{color:var(--bone-dim);font-size:14.5px;}
+.service ul{margin-top:16px;padding-left:0;list-style:none;}
+.service li{color:var(--grey);font-size:13px;margin-bottom:6px;padding-left:14px;position:relative;}
+.service li::before{content:'—';position:absolute;left:0;color:var(--amber);}
+
+/* PROCESS */
+.process{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;}
+.step{border-top:2px solid var(--violet);padding-top:20px;}
+.step .n{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:22px;font-weight:800;}
+.step h4{font-family:'JetBrains Mono',monospace;font-size:16px;margin:12px 0 8px;}
+.step p{color:var(--bone-dim);font-size:14px;}
+
+/* WHY US */
+.why{display:grid;grid-template-columns:0.9fr 1.1fr;gap:60px;align-items:start;}
+.why-list{display:flex;flex-direction:column;gap:26px;margin-top:30px;}
+.why-item{display:flex;gap:18px;}
+.why-item .mark{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:14px;flex-shrink:0;padding-top:2px;}
+.why-item h4{font-size:16px;margin-bottom:6px;}
+.why-item p{color:var(--bone-dim);font-size:14.5px;}
+.stat-card{background:var(--panel);border:1px solid var(--line);padding:32px;border-radius:6px;margin-bottom:18px;}
+.stat-card .val{font-family:'JetBrains Mono',monospace;font-size:34px;font-weight:800;color:var(--amber);}
+.stat-card .lbl{color:var(--bone-dim);font-size:13.5px;margin-top:6px;}
+
+/* PORTFOLIO */
+.portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.pf-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:6px;
+  padding:28px;transition:border-color .2s ease, transform .2s ease;
+}
+.pf-card:hover{border-color:var(--amber-dim);transform:translateY(-4px);}
+.pf-tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--amber);letter-spacing:2px;text-transform:uppercase;}
+.pf-card h4{font-family:'JetBrains Mono',monospace;font-size:17px;margin:14px 0 10px;}
+.pf-card p{color:var(--bone-dim);font-size:14px;}
+.pf-stack{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;}
+.pf-stack span{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--grey);border:1px solid var(--line);padding:4px 9px;border-radius:20px;}
+
+/* ABOUT */
+.about{display:grid;grid-template-columns:0.85fr 1.15fr;gap:60px;align-items:center;}
+.about-visual{
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:40px;position:relative;overflow:hidden;
+}
+.about-visual::before{
+  content:'';position:absolute;top:-40%;right:-30%;width:70%;height:70%;
+  background:radial-gradient(circle, rgba(62,143,255,0.18), transparent 70%);
+}
+.about-visual .big-mark{width:120px;height:120px;margin:0 auto;}
+.about-visual .loc{
+  text-align:center;margin-top:22px;font-family:'JetBrains Mono',monospace;
+  color:var(--bone-dim);font-size:13px;letter-spacing:2px;text-transform:uppercase;
+}
+.about-body p{color:var(--bone-dim);margin-bottom:16px;font-size:15.5px;}
+.about-body p strong{color:var(--bone);}
+
+/* BLOG */
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.blog-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:6px;
+  overflow:hidden;transition:border-color .2s ease, transform .2s ease;
+}
+.blog-card:hover{border-color:var(--amber-dim);transform:translateY(-4px);}
+.blog-thumb{height:120px;background:linear-gradient(135deg, var(--panel-2), var(--void));position:relative;}
+.blog-thumb::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 30%, rgba(62,143,255,0.25), transparent 60%);}
+.blog-body{padding:22px;}
+.blog-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--amber);letter-spacing:2px;text-transform:uppercase;}
+.blog-body h4{font-family:'JetBrains Mono',monospace;font-size:16px;margin:12px 0 10px;}
+.blog-body p{color:var(--bone-dim);font-size:13.5px;}
+.blog-read{display:inline-block;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--amber);border-bottom:1px solid var(--amber-dim);}
+
+/* CONTACT */
+.contact-box{
+  background:linear-gradient(135deg, var(--panel), var(--panel-2));
+  border:1px solid var(--line);border-radius:10px;
+  padding:60px 8%;text-align:center;
+}
+.contact-box h2{margin-top:0;}
+.contact-box p{color:var(--bone-dim);max-width:520px;margin:18px auto 34px;}
+.contact-links{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;margin-top:30px;font-family:'JetBrains Mono',monospace;font-size:14px;}
+.contact-links a{color:var(--bone-dim);border-bottom:1px solid var(--line);padding-bottom:2px;}
+.contact-links a:hover{color:var(--amber);border-color:var(--amber);}
+
+footer{
+  padding:36px 6%;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--grey);
+  flex-wrap:wrap;gap:12px;
+}
+
+/* header scrolled state (JS-toggled) */
+header.scrolled{background:rgba(10,10,14,0.92);}
+
+@media (max-width: 880px){
+  .nav-toggle{display:flex;}
+  nav{
+    position:fixed;top:78px;left:0;right:0;
+    flex-direction:column;gap:0;
+    background:rgba(10,10,14,0.97);
+    border-bottom:1px solid var(--line);
+    max-height:0;overflow:hidden;
+    transition:max-height .25s ease;
+  }
+  nav.open{max-height:400px;}
+  nav a{padding:16px 6%;border-bottom:1px solid var(--line);}
+  .hero-grid, .why, .about{grid-template-columns:1fr;}
+  .services-grid{grid-template-columns:1fr 1fr;}
+  .process{grid-template-columns:1fr 1fr;}
+  .portfolio-grid, .blog-grid{grid-template-columns:1fr;}
+}
+@media (max-width: 520px){
+  .services-grid{grid-template-columns:1fr;}
+  .process{grid-template-columns:1fr;}
+}
+@media (prefers-reduced-motion: reduce){
+  .cursor, .dot, .wa-ping{animation:none;}
+}
+
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<header>
+  <a class="brand" href="https://wa.me/252637025250" target="_blank" rel="noopener" title="Chat with us on WhatsApp">
+    <span class="brand-mark">
+      <svg viewBox="0 0 40 44" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4,34 Q6,38 8,34 Q10,38 12,34 Q14,38 16,34 Q18,38 20,34 Q22,38 24,34 Q26,38 28,34 Q30,38 32,34
+                 L32,22 Q32,4 18,4 Q4,4 4,22 Z"
+              fill="none" stroke="#F2EFE6" stroke-width="2.2" stroke-linejoin="round"/>
+        <line x1="13" y1="17" x2="23" y2="17" stroke="#3E8FFF" stroke-width="1.6"/>
+        <circle cx="13" cy="17" r="1.6" fill="#3E8FFF"/>
+        <circle cx="23" cy="17" r="1.8" fill="#3E8FFF"/>
+      </svg>
+    </span>
+    <span>GHOST_91</span>
+    <span class="dot"></span>
+  </a>
+  <nav>
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#process">Process</a>
+    <a href="#portfolio">Portfolio</a>
+    <a href="#blog">Blog</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <a href="#contact" class="btn btn-primary" style="padding:10px 18px;font-size:12.5px;">Start a Project</a>
+    <button class="nav-toggle" aria-label="Toggle menu"><span></span></button>
+  </div>
+</header>
+
+<a class="wa-float" href="https://wa.me/252630000000" target="_blank" rel="noopener" title="Chat with us on WhatsApp">
+  <span class="wa-ping"></span>
+  <svg viewBox="0 0 24 24"><path d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4c-4.34 0-7.87 3.53-7.87 7.87 0 1.39.36 2.73 1.05 3.92L4 20l4.32-1.13a7.85 7.85 0 0 0 3.73.95h0c4.34 0 7.87-3.53 7.87-7.87a7.83 7.83 0 0 0-2.32-5.63zm-5.55 12.1h0a6.53 6.53 0 0 1-3.33-.91l-.24-.14-2.48.65.66-2.42-.16-.25a6.54 6.54 0 0 1-1-3.48c0-3.61 2.94-6.55 6.56-6.55a6.51 6.51 0 0 1 4.63 1.92 6.51 6.51 0 0 1 1.92 4.63c0 3.62-2.94 6.55-6.56 6.55zm3.59-4.91c-.2-.1-1.17-.58-1.35-.64-.18-.07-.31-.1-.44.1-.13.2-.51.64-.62.77-.11.13-.23.15-.43.05-.2-.1-.83-.31-1.58-.98-.58-.52-.98-1.16-1.09-1.36-.11-.2-.01-.31.09-.4.09-.09.2-.23.3-.35.1-.11.13-.2.2-.33.07-.13.03-.25-.02-.35-.05-.1-.44-1.06-.6-1.45-.16-.38-.32-.33-.44-.33-.11 0-.24-.02-.37-.02-.13 0-.35.05-.53.25-.18.2-.7.68-.7 1.66 0 .98.71 1.92.81 2.05.1.13 1.4 2.14 3.39 3 .47.2.84.33 1.13.42.47.15.9.13 1.24.08.38-.06 1.17-.48 1.33-.94.16-.46.16-.86.11-.94-.05-.09-.18-.14-.38-.24z"/></svg>
+</a>
+
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">London, Somaliland — Est. 2026</div>
+      <h1>Digital Security<br>and Software <span>You Can Trust.</span></h1>
+      <p class="lead">GHOST_91 is a Somali technology company focused on cybersecurity, website development, app development, and business systems — delivered systematically, professionally, and to a high standard.</p>
+      <div class="cta-row">
+        <a href="#contact" class="btn btn-primary">Get a Quote &nbsp;→</a>
+        <a href="#services" class="btn btn-ghost">View Services</a>
+      </div>
+    </div>
+    <div class="terminal">
+      <div class="term-bar">
+        <span></span><span></span><span></span>
+        <div class="term-title">ghost91@secure:~</div>
+      </div>
+      <div class="term-body">
+        <div class="l"><span class="prompt">$</span> whoami</div>
+        <div class="l">GHOST_91 — Cybersecurity &amp; Software Unit</div>
+        <div class="l">&nbsp;</div>
+        <div class="l"><span class="prompt">$</span> ls services/</div>
+        <div class="l">penetration-testing/&nbsp;&nbsp;security-audits/</div>
+        <div class="l">web-development/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app-development/</div>
+        <div class="l">system-development/</div>
+        <div class="l">&nbsp;</div>
+        <div class="l"><span class="prompt">$</span> status --check</div>
+        <div class="l"><span class="ok">✓</span> Available for new engagements</div>
+        <div class="l"><span class="prompt">$</span> <span class="cursor"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="about">
+    <div class="about-visual">
+      <svg class="big-mark" viewBox="0 0 40 44" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4,34 Q6,38 8,34 Q10,38 12,34 Q14,38 16,34 Q18,38 20,34 Q22,38 24,34 Q26,38 28,34 Q30,38 32,34
+                 L32,22 Q32,4 18,4 Q4,4 4,22 Z"
+              fill="none" stroke="#F2EFE6" stroke-width="1.6" stroke-linejoin="round"/>
+        <line x1="13" y1="17" x2="23" y2="17" stroke="#3E8FFF" stroke-width="1.2"/>
+        <circle cx="13" cy="17" r="1.4" fill="#3E8FFF"/>
+        <circle cx="23" cy="17" r="1.6" fill="#3E8FFF"/>
+      </svg>
+      <div class="loc">London · Somaliland</div>
+    </div>
+    <div class="about-body">
+      <div class="tag">About GHOST_91</div>
+      <h2 style="margin:12px 0 22px;">A small team, a lot of craft.</h2>
+      <p>GHOST_91 was founded in London on real, hands-on expertise — authorized penetration testing, business systems development, and software engineering.</p>
+      <p><strong>Our mission</strong> is to give Somali businesses digital security they can trust, without having to go through foreign firms.</p>
+      <p>We believe in quality, honesty, and work that speaks for itself — every project starts with real research and a genuine understanding of the client's needs.</p>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="section-head">
+    <div class="tag">Services</div>
+    <h2>Four disciplines, one standard.</h2>
+    <p>We offer end-to-end services — from digital security to building the business systems that run on top of it.</p>
+  </div>
+  <div class="services-grid">
+    <div class="service">
+      <div class="num">01 / SECURITY</div>
+      <h3>Cybersecurity</h3>
+      <p>Testing and hardening your systems — before a real attacker finds the gap.</p>
+      <ul>
+        <li>Penetration Testing (VAPT)</li>
+        <li>Security Audits</li>
+        <li>Security Awareness Training</li>
+      </ul>
+    </div>
+    <div class="service">
+      <div class="num">02 / WEB</div>
+      <h3>Web Development</h3>
+      <p>Professional, fast websites built around your business.</p>
+      <ul>
+        <li>Business &amp; Corporate Sites</li>
+        <li>E-commerce</li>
+        <li>Custom Dashboards</li>
+      </ul>
+    </div>
+    <div class="service">
+      <div class="num">03 / APP</div>
+      <h3>App Development</h3>
+      <p>Mobile applications built around the real needs of your business.</p>
+      <ul>
+        <li>Delivery &amp; Tracking Apps</li>
+        <li>Booking Systems</li>
+        <li>Android / Cross-platform</li>
+      </ul>
+    </div>
+    <div class="service">
+      <div class="num">04 / SYSTEM</div>
+      <h3>System Development</h3>
+      <p>Complete business systems — from data storage to daily operations management.</p>
+      <ul>
+        <li>Business Management Systems</li>
+        <li>Database Design</li>
+        <li>GPS &amp; Live Tracking Integration</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="process">
+  <div class="section-head">
+    <div class="tag">How We Work</div>
+    <h2>Our process.</h2>
+    <p>One clear path, from research to ongoing support after the project ships.</p>
+  </div>
+  <div class="process">
+    <div class="step">
+      <div class="n">01</div>
+      <h4>Research</h4>
+      <p>We understand your needs and the risks in your current systems.</p>
+    </div>
+    <div class="step">
+      <div class="n">02</div>
+      <h4>Planning</h4>
+      <p>A clear plan with realistic cost and timeline is presented to you.</p>
+    </div>
+    <div class="step">
+      <div class="n">03</div>
+      <h4>Build</h4>
+      <p>Development or testing proceeds in stages, with progress shared along the way.</p>
+    </div>
+    <div class="step">
+      <div class="n">04</div>
+      <h4>Support</h4>
+      <p>After delivery, we continue with maintenance and ongoing support.</p>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="why">
+    <div>
+      <div class="tag">Why Choose Us</div>
+      <h2>Real work, not just talk.</h2>
+      <div class="why-list">
+        <div class="why-item">
+          <div class="mark">→</div>
+          <div><h4>Verified expertise</h4><p>Internationally recognized cybersecurity certifications (CEH) and real penetration testing experience with clients including banks and universities.</p></div>
+        </div>
+        <div class="why-item">
+          <div class="mark">→</div>
+          <div><h4>Understanding of the Somali market</h4><p>We know how mobile money (Zaad, EVC Plus) works and what local businesses actually need — results you can rely on.</p></div>
+        </div>
+        <div class="why-item">
+          <div class="mark">→</div>
+          <div><h4>Full-stack, in one place</h4><p>Security, web, apps, and systems — one company handles it all, so you're not juggling multiple vendors.</p></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="stat-card"><div class="val">CEH+</div><div class="lbl">Verified cybersecurity certifications</div></div>
+      <div class="stat-card"><div class="val">100%</div><div class="lbl">Authorized penetration testing engagements</div></div>
+      <div class="stat-card"><div class="val">Full-Stack</div><div class="lbl">Django · Flask · MySQL · Python · Google Maps API</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="portfolio">
+  <div class="section-head">
+    <div class="tag">Past Projects</div>
+    <h2>Work you can see.</h2>
+    <p>A few examples from projects we've built.</p>
+  </div>
+  <div class="portfolio-grid">
+    <div class="pf-card">
+      <div class="pf-tag">System Development</div>
+      <h4>Coffee Shop Management System</h4>
+      <p>A complete system managing a coffee business, live delivery tracking, and a driver GPS dashboard.</p>
+      <div class="pf-stack"><span>Django</span><span>Flask</span><span>MySQL</span><span>Maps API</span></div>
+    </div>
+    <div class="pf-card">
+      <div class="pf-tag">Web Development</div>
+      <h4>E-commerce Demo Site</h4>
+      <p>A single-file website with cart, delivery tracking UI, and login/signup modals.</p>
+      <div class="pf-stack"><span>HTML</span><span>CSS</span><span>JavaScript</span></div>
+    </div>
+    <div class="pf-card">
+      <div class="pf-tag">Cybersecurity</div>
+      <h4>Recon &amp; Reporting Agent</h4>
+      <p>A Python tool combining port scanning, OSINT/DNS, web fingerprinting, and automated report generation.</p>
+      <div class="pf-stack"><span>Python</span><span>Nmap</span><span>AI Integration</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="blog">
+  <div class="section-head">
+    <div class="tag">Blog</div>
+    <h2>Knowledge worth sharing.</h2>
+    <p>Short reads on cybersecurity, tech, and digital business for the Somali market.</p>
+  </div>
+  <div class="blog-grid">
+    <div class="blog-card">
+      <div class="blog-thumb"></div>
+      <div class="blog-body">
+        <div class="blog-date">Cybersecurity</div>
+        <h4>5 Security Mistakes Businesses Make</h4>
+        <p>The most common mistakes Somali businesses make when it comes to protecting their data.</p>
+        <a class="blog-read" href="#">Read &nbsp;→</a>
+      </div>
+    </div>
+    <div class="blog-card">
+      <div class="blog-thumb"></div>
+      <div class="blog-body">
+        <div class="blog-date">Web Dev</div>
+        <h4>Why Your Website Matters</h4>
+        <p>How a professional website builds trust with your customers.</p>
+        <a class="blog-read" href="#">Read &nbsp;→</a>
+      </div>
+    </div>
+    <div class="blog-card">
+      <div class="blog-thumb"></div>
+      <div class="blog-body">
+        <div class="blog-date">Pentest</div>
+        <h4>What Is Penetration Testing?</h4>
+        <p>A simple explanation of how VAPT is used to secure banking and business systems.</p>
+        <a class="blog-read" href="#">Read &nbsp;→</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="contact-box">
+    <div class="tag">Contact Us</div>
+    <h2>Ready to secure your business?</h2>
+    <p>Tell us about your project — we'll get back to you within 24 hours.</p>
+    <a href="https://wa.me/252637025250" target="_blank" rel="noopener" class="btn btn-primary">Start the Conversation &nbsp;→</a>
+    <div class="contact-links">
+      <a href="https://wa.me/252637025250" target="_blank" rel="noopener">WhatsApp</a>
+      <a href="ghost.security91@gmail.com">ghost.security91@gmail.com</a>
+      <a href="https://www.linkedin.com/company/135694519/admin/dashboard/">LinkedIn</a>
+      <a href="#">London, Somaliland</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 GHOST_91. All rights reserved.</div>
+  <div>Cybersecurity · Web · App · System Development</div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var header = document.querySelector('header');
+  var nav = document.querySelector('nav');
+  var toggle = document.querySelector('.nav-toggle');
+
+  // Mobile menu open/close
+  if (toggle && nav) {
+    toggle.addEventListener('click', function () {
+      nav.classList.toggle('open');
+      toggle.classList.toggle('open');
+    });
+
+    // Close menu after tapping a link (mobile)
+    nav.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        nav.classList.remove('open');
+        toggle.classList.remove('open');
+      });
+    });
+  }
+
+  // Header background changes after scrolling past the hero
+  window.addEventListener('scroll', function () {
+    if (window.scrollY > 40) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  });
+});
+
+</script>
+</body>
+</html>
